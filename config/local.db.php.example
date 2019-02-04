@@ -1,0 +1,5 @@
+<?php
+
+$db['username'] = 'root';
+$db['password'] = '1';
+$db['dsn'] = 'mysql:host=localhost;dbname=atom_test';
