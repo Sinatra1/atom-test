@@ -21,26 +21,57 @@ namespace app\models;
 
 class User extends Base implements \yii\web\IdentityInterface
 {
-
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-    public $created;
-    public $updated;
-    public $deleted;
-    public $is_deleted;
-    public $email;
-    public $first_name;
-    public $last_name;
-
     /**
      * @return string
      */
     public static function tableName()
     {
         return 'user';
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['username', 'password', 'first_name', 'last_name', 'email'], 'required'],
+            [['username', 'first_name', 'last_name', 'password', 'email'], 'string', 'max' => 255],
+            ['email', 'email'],
+        ];
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        unset($fields['password']);
+        unset($fields['access_token']);
+
+        return $fields;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function beforeSave($insert)
+    {
+        $result = parent::beforeSave($insert);
+
+        $userArray = User::find()->where(['username' => $this->username])->asArray()->one();
+
+        if (!empty($this->password) && $this->password != $userArray['password']) {
+            $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+        }
+
+        if ($this->isNewRecord) {
+            $this->access_token = Yii::$app->getSecurity()->generatePasswordHash(rand(0, 1000));
+        }
+
+        return $result;
     }
 
     /**
@@ -56,13 +87,18 @@ class User extends Base implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
+        return static::findOne(['access_token' => $token, 'is_deleted' => false]);
+    }
+    
+    public function markDeleted()
+    {
+        $this->username .= md5(rand(0, 1000));
+        $this->email .= md5(rand(0, 1000));
+        $this->is_deleted = true;
+        $this->deleted = date('Y-m-d H:i:s', time());
+        $result = $this->save();
 
-        return null;
+        return $result;
     }
 
     /**
@@ -73,13 +109,7 @@ class User extends Base implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['username' => $username, 'is_deleted' => false]);
     }
 
     /**

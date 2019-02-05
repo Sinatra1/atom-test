@@ -10,6 +10,7 @@ use app\models\Book;
  */
 class m190204_180404_create_table_user_to_book extends Migration
 {
+
     public static $userId = 'user_id';
     public static $bookId = 'book_id';
 
@@ -26,10 +27,10 @@ class m190204_180404_create_table_user_to_book extends Migration
             'is_deleted' => $this->boolean()->notNull()->defaultValue('0'),
         ], 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
 
-        $this->createIndex('idx_' . UserToBook::tableName() . '_user_id', UserToBook::tableName(), 'user_id');
-        $this->createIndex('idx_' . UserToBook::tableName() . '_book_id', UserToBook::tableName(), 'book_id');
-        $this->createIndex('idx_' . UserToBook::tableName() . '_user_id_book_id', UserToBook::tableName(), ['user_id', 'book_id'], true);
-        
+        $this->createIndex('idx_' . UserToBook::tableName() . '_' . self::$userId, UserToBook::tableName(), self::$userId);
+        $this->createIndex('idx_' . UserToBook::tableName() . '_' . self::$bookId, UserToBook::tableName(), self::$bookId);
+        $this->createIndex('idx_' . UserToBook::tableName() . '_' . self::$userId . '_' . self::$bookId, UserToBook::tableName(), [self::$userId, self::$bookId], true);
+
         $this->addForeignKey('fk_' . User::tableName() . '_' . self::$userId, UserToBook::tableName(), self::$userId, User::tableName(), 'id');
         $this->addForeignKey('fk_' . Book::tableName() . '_' . self::$bookId, UserToBook::tableName(), self::$bookId, Book::tableName(), 'id');
     }
