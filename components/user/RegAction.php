@@ -38,7 +38,7 @@ class RegAction extends Action
 
         $userArray = User::find()->where(['username' => $model->username])->asArray()->one();
 
-        return ['access_token' => $userArray['access_token'], 'id' => \Yii::$app->user->id];
+        return ['access_token' => 'Bearer ' . $userArray['access_token'], 'id' => \Yii::$app->user->id];
     }
 
 }

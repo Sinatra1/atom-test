@@ -51,24 +51,4 @@ class UserController extends ActiveController
 
         return $actions;
     }
-    
-    /**
-     * @return \ServerResult
-     * @throws ServerErrorHttpException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function actionCreate()
-    {
-        $request = Yii::$app->getRequest()->getBodyParams();
-        
-        $user = new User();
-        
-        $user->load(\Yii::$app->getRequest()->getBodyParams(), '');
-        
-        $user->updateByRequest($request);
-        
-        $user = User::findOne($user->id);
-
-        return $user;
-    }
 }

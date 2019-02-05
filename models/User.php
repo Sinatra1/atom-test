@@ -125,6 +125,17 @@ class User extends Base implements \yii\web\IdentityInterface
     {
         return static::findOne(['username' => $username, 'is_deleted' => false]);
     }
+    
+    /**
+     * Finds user by email
+     *
+     * @param string $email
+     * @return static|null
+     */
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email, 'is_deleted' => false]);
+    }
 
     /**
      * {@inheritdoc}

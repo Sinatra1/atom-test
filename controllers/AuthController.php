@@ -35,7 +35,7 @@ class AuthController extends ActiveController
         $actions = parent::actions();
 
         $actions['create'] = [
-            'class' => 'app\components\auth\RegAction',
+            'class' => 'app\components\auth\LoginAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
