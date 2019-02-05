@@ -1,7 +1,7 @@
 <?php
 require(__DIR__ . '/../config/local.origin.php');
 header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Authorization, Cookie');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Authorization, Cookie');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 // comment out the following two lines when deployed to production

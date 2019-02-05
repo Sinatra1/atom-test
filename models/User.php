@@ -2,14 +2,15 @@
 
 namespace app\models;
 
+use Yii;
+
 /**
  * This is the model class for table "user".
  *
  * @property integer $id
  * @property string $username
  * @property text $password
- * @property string $authKey
- * @property text $accessToken
+ * @property text $access_token
  * @property string $email
  * @property string $first_name
  * @property string $last_name
@@ -21,6 +22,8 @@ namespace app\models;
 
 class User extends Base implements \yii\web\IdentityInterface
 {
+    protected $cookieTime = 2592000;
+    
     /**
      * @return string
      */
@@ -69,6 +72,17 @@ class User extends Base implements \yii\web\IdentityInterface
 
         if ($this->isNewRecord) {
             $this->access_token = Yii::$app->getSecurity()->generatePasswordHash(rand(0, 1000));
+        }
+
+        return $result;
+    }
+    
+    public function login()
+    {
+        $result = \Yii::$app->user->login($this, $this->cookieTime);
+
+        if (empty($result)) {
+            return $result;
         }
 
         return $result;

@@ -28,8 +28,8 @@ class RegAction extends Action
 
         $model->save();
         
-        if (!$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
+        if ($model->hasErrors()) {
+            throw Exception('Failed to create the object for unknown reason.' . var_dump($model->getErrors()));
         }
 
         if (!$model->login()) {
@@ -38,7 +38,7 @@ class RegAction extends Action
 
         $userArray = User::find()->where(['username' => $model->username])->asArray()->one();
 
-        return ['accessToken' => $userArray['access_token'], 'id' => \Yii::$app->user->id];
+        return ['access_token' => $userArray['access_token'], 'id' => \Yii::$app->user->id];
     }
 
 }
