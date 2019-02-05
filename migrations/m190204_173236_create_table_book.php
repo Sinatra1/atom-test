@@ -15,7 +15,7 @@ class m190204_173236_create_table_book extends Migration
     {
         $this->createTable(Book::tableName(), [
             'id' => $this->primaryKey(),
-            'image_id' => $this->bigInteger()->null(),
+            'image_id' => $this->integer(11)->null(),
             'created' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'updated' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'deleted' => $this->dateTime()->null(),

@@ -2,12 +2,16 @@
 
 use yii\db\Migration;
 use app\models\UserToBook;
+use app\models\User;
+use app\models\Book;
 
 /**
  * Class m190204_180404_create_table_user_to_book
  */
 class m190204_180404_create_table_user_to_book extends Migration
 {
+    public static $userId = 'user_id';
+    public static $bookId = 'book_id';
 
     /**
      * create table user_to_book
@@ -15,10 +19,9 @@ class m190204_180404_create_table_user_to_book extends Migration
     public function safeUp()
     {
         $this->createTable(UserToBook::tableName(), [
-            'user_id' => $this->bigInteger()->notNull(),
-            'book_id' => $this->bigInteger()->notNull(),
+            self::$userId => $this->integer(11)->notNull(),
+            self::$bookId => $this->integer(11)->notNull(),
             'created' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
-            'updated' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'deleted' => $this->dateTime()->null(),
             'is_deleted' => $this->boolean()->notNull()->defaultValue('0'),
         ], 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
@@ -26,6 +29,9 @@ class m190204_180404_create_table_user_to_book extends Migration
         $this->createIndex('idx_' . UserToBook::tableName() . '_user_id', UserToBook::tableName(), 'user_id');
         $this->createIndex('idx_' . UserToBook::tableName() . '_book_id', UserToBook::tableName(), 'book_id');
         $this->createIndex('idx_' . UserToBook::tableName() . '_user_id_book_id', UserToBook::tableName(), ['user_id', 'book_id'], true);
+        
+        $this->addForeignKey('fk_' . User::tableName() . '_' . self::$userId, UserToBook::tableName(), self::$userId, User::tableName(), 'id');
+        $this->addForeignKey('fk_' . Book::tableName() . '_' . self::$bookId, UserToBook::tableName(), self::$bookId, Book::tableName(), 'id');
     }
 
     /**
