@@ -21,7 +21,6 @@ class m190204_173236_create_table_book extends Migration
     {
         $this->createTable(Book::tableName(), [
             'id' => $this->primaryKey(),
-            'image_id' => $this->integer(11)->null(),
             'created' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'updated' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'deleted' => $this->dateTime()->null(),
@@ -29,11 +28,11 @@ class m190204_173236_create_table_book extends Migration
             self::$isbn => $this->string(13)->unique()->null(),
             self::$year => $this->integer(4)->notNull(),
             self::$name => $this->string()->notNull(),
+            'cover_image' => $this->string()->null(),
             'description' => $this->text()->null()
                 ], 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
 
         $this->createIndex('idx_' . self::$tableName . '_name', Book::tableName(), 'name');
-        $this->createIndex('idx_' . self::$tableName . '_image_id', Book::tableName(), 'image_id');
 
         $this->createIndex('idx_' . self::$tableName . '_' . self::$name. '_' . self::$year, Book::tableName(), [self::$name, self::$year], true);
     }

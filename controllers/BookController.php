@@ -36,6 +36,13 @@ class BookController extends ActiveController
         $actions = parent::actions();
 
         $actions['index']['prepareDataProvider'] = [$this, 'getListDataProvider'];
+        
+        $actions['create'] = [
+            'class' => 'app\components\book\CreateAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
+            'scenario' => $this->createScenario,
+        ];
 
         return $actions;
     }

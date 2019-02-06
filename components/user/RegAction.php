@@ -29,7 +29,7 @@ class RegAction extends Action
         $model->save();
         
         if ($model->hasErrors()) {
-            throw Exception('Failed to create the object for unknown reason.' . var_dump($model->getErrors()));
+            throw Exception('Failed to create the object for unknown reason.');
         }
 
         if (!$model->login()) {
