@@ -20,7 +20,7 @@ class m190204_173236_create_table_book extends Migration
             'updated' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'deleted' => $this->dateTime()->null(),
             'is_deleted' => $this->boolean()->notNull()->defaultValue('0'),
-            'isbn' => $this->string(10)->unique()->notNull(),
+            'isbn' => $this->string(17)->unique()->notNull(),
             'year' => $this->integer(4)->notNull(),
             'name' => $this->string()->notNull(),
             'description' => $this->text()->null()
