@@ -8,6 +8,12 @@ use app\models\Book;
  */
 class m190204_173236_create_table_book extends Migration
 {
+
+    public static $tableName = 'book';
+    public static $name = 'name';
+    public static $year = 'year';
+    public static $isbn = 'isbn';
+
     /**
      * create table book
      */
@@ -20,14 +26,16 @@ class m190204_173236_create_table_book extends Migration
             'updated' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
             'deleted' => $this->dateTime()->null(),
             'is_deleted' => $this->boolean()->notNull()->defaultValue('0'),
-            'isbn' => $this->string(17)->unique()->null(),
-            'year' => $this->integer(4)->notNull(),
-            'name' => $this->string()->notNull(),
+            self::$isbn => $this->string(13)->unique()->null(),
+            self::$year => $this->integer(4)->notNull(),
+            self::$name => $this->string()->notNull(),
             'description' => $this->text()->null()
-        ], 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
-        
-        $this->createIndex('idx_book_name', Book::tableName(), 'name');
-        $this->createIndex('idx_book_image_id', Book::tableName(), 'image_id');
+                ], 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
+
+        $this->createIndex('idx_' . self::$tableName . '_name', Book::tableName(), 'name');
+        $this->createIndex('idx_' . self::$tableName . '_image_id', Book::tableName(), 'image_id');
+
+        $this->createIndex('idx_' . self::$tableName . '_' . self::$name. '_' . self::$year, Book::tableName(), [self::$name, self::$year], true);
     }
 
     /**
@@ -37,4 +45,5 @@ class m190204_173236_create_table_book extends Migration
     {
         $this->dropTable(Book::tableName());
     }
+
 }

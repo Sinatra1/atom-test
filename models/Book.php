@@ -26,4 +26,27 @@ class Book extends Base
     {
         return 'book';
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        $currentYear = date("Y");
+        $oldestYear = 1400;
+        
+        return [
+            [['name', 'year'], 'required'],
+            ['name', 'string', 'max' => 255],
+            ['name', 'string', 'max' => 255],
+            ['isbn', 'string', 'length' => 13],
+            [['year', 'isbn'], 'integer'],
+            ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
+            ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
+            [['name', 'year', 'isbn', 'description'], 'trim'],
+            ['description', 'string'],
+            ['isbn', 'unique'],
+            [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
+        ];
+    }
 }

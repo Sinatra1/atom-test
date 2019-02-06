@@ -40,7 +40,10 @@ class User extends Base implements \yii\web\IdentityInterface
         return [
             [['username', 'password', 'first_name', 'last_name', 'email'], 'required'],
             [['username', 'first_name', 'last_name', 'password', 'email'], 'string', 'max' => 255],
+            [['username', 'password', 'first_name', 'last_name', 'email'], 'trim'],
             ['email', 'email'],
+            ['email', 'unique'],
+            ['username', 'unique'],
         ];
     }
     
