@@ -50,6 +50,20 @@ class Book extends Base
                 [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']]
         ];
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function beforeSave($insert)
+    {
+        $result = parent::beforeSave($insert);
+
+        if (empty($this->isbn)) {
+            $this->isbn = null;
+        }
+
+        return $result;
+    }
 
     /**
      * 
