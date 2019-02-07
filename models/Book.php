@@ -58,7 +58,6 @@ class Book extends Base
                     ['cover_image_file'], 
                     'file', 
                     'extensions' => ['png', 'jpg', 'gif', 'jpeg'],
-                    'maxSize' => 20*1024*1024
                 ],
         ];
     }

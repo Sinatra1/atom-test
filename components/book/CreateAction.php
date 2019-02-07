@@ -35,6 +35,9 @@ class CreateAction extends Action
         
         if (!empty($model->cover_image_file)) {
             $model->uploadCoverImageFile();
+            if ($model->hasErrors()) {
+                die(var_dump($model->getErrors()));
+            }
         }
         
         $model->cover_image_file = null;
