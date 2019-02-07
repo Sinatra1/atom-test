@@ -2,5 +2,5 @@
 
 return [
     'adminEmail' => 'admin@example.com',
-    'uploadDirPath' => '/web/images/'
+    'uploadDirName' => 'images'
 ];

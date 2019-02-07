@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use yii\web\ServerErrorHttpException;
+
 /**
  * This is the model class for table "book".
  *
@@ -19,7 +21,6 @@ namespace app\models;
  */
 class Book extends Base
 {
-    public $cover_image_file; 
     /**
      * @return string
      */
@@ -37,20 +38,16 @@ class Book extends Base
         $oldestYear = 1400;
 
         return [
-            [['name', 'year'], 'required'],
-            [['name', 'cover_image'], 'string', 'max' => 255],
-            ['isbn', 'string', 'length' => 13],
-            [['year', 'isbn'], 'integer'],
-            ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
-            ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
-            [['name', 'year', 'isbn', 'description'], 'trim'],
-            ['description', 'string'],
-            ['isbn', 'unique'],
-            [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
-            ['cover_image_file', 'image', 'extensions' => 'png, jpg',
-                'minWidth' => 100, 'maxWidth' => 1000,
-                'minHeight' => 100, 'maxHeight' => 1000,
-            ],
+                [['name', 'year'], 'required'],
+                [['name', 'cover_image'], 'string', 'max' => 255],
+                ['isbn', 'string', 'length' => 13],
+                [['year', 'isbn'], 'integer'],
+                ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
+                ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
+                [['name', 'year', 'isbn', 'description'], 'trim'],
+                ['description', 'string'],
+                ['isbn', 'unique'],
+                [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']]
         ];
     }
 
@@ -64,24 +61,24 @@ class Book extends Base
         if (empty($coverImageFile)) {
             return false;
         }
-
-        $uploadDirPath = \Yii::$app->basePath . \Yii::$app->params['uploadDirPath'];
-
+        $parentDir = \Yii::$app->basePath . '/web';
+        $uploadDirPath = $parentDir . '/' . \Yii::$app->params['uploadDirName'];
+        
         if (!file_exists($uploadDirPath)) {
-            mkdir($uploadDirPath);
+            throw new ServerErrorHttpException('Upload dir ' . $uploadDirPath . ' not exists');
         }
 
         $coverImage = $coverImageFile->baseName . '.' . $coverImageFile->extension;
         
-        $uploadResult = $coverImageFile->saveAs($uploadDirPath . $coverImage);
+        $uploadResult = $coverImageFile->saveAs($uploadDirPath . '/' . $coverImage);
 
         if ($uploadResult) {
             $this->cover_image = $coverImage;
         } else {
-            throw Exception('Failed to save cover image file');
+            throw new ServerErrorHttpException('Failed to save cover image file');
         }
-        
-        return $uploadResult; 
+
+        return $uploadResult;
     }
 
 }

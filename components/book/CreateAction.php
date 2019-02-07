@@ -22,7 +22,7 @@ class CreateAction extends Action
         $model = new $this->modelClass([
             'scenario' => $this->scenario,
         ]);
-
+        
         $model->load(\Yii::$app->getRequest()->getBodyParams(), '');
 
         $coverImageFile = UploadedFile::getInstanceByName('cover_image_file');
@@ -34,7 +34,7 @@ class CreateAction extends Action
         $model->save();
 
         if ($model->hasErrors()) {
-            throw ServerErrorHttpException('Failed to create the book for unknown reason.');
+            throw new ServerErrorHttpException('Failed to create the book for unknown reason.');
         }
 
         return $model->id;
