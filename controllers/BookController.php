@@ -43,6 +43,13 @@ class BookController extends ActiveController
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
         ];
+        
+        $actions['update'] = [
+            'class' => 'app\components\book\CreateAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
+            'scenario' => $this->updateScenario,
+        ];
 
         return $actions;
     }

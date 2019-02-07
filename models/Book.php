@@ -21,6 +21,12 @@ use yii\web\ServerErrorHttpException;
  */
 class Book extends Base
 {
+
+    /**
+     * @var UploadedFile
+     */
+    public $cover_image_file;
+
     /**
      * @return string
      */
@@ -47,10 +53,16 @@ class Book extends Base
                 [['name', 'year', 'isbn', 'description'], 'trim'],
                 ['description', 'string'],
                 ['isbn', 'unique'],
-                [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']]
+                [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
+                [
+                    ['cover_image_file'], 
+                    'file', 
+                    'extensions' => ['png', 'jpg', 'gif', 'jpeg'],
+                    'maxSize' => 20*1024*1024
+                ],
         ];
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -62,6 +74,10 @@ class Book extends Base
             $this->isbn = null;
         }
 
+        if (empty($this->cover_image)) {
+            $this->cover_image = null;
+        }
+
         return $result;
     }
 
@@ -70,21 +86,21 @@ class Book extends Base
      * @param UploadedFile $coverImageFile
      * @return bool upload result
      */
-    public function uploadCoverImageFile($coverImageFile)
+    public function uploadCoverImageFile()
     {
-        if (empty($coverImageFile)) {
+        if (empty($this->cover_image_file) || !$this->validate()) {
             return false;
         }
         $parentDir = \Yii::$app->basePath . '/web';
         $uploadDirPath = $parentDir . '/' . \Yii::$app->params['uploadDirName'];
-        
+
         if (!file_exists($uploadDirPath)) {
             throw new ServerErrorHttpException('Upload dir ' . $uploadDirPath . ' not exists');
         }
 
-        $coverImage = $coverImageFile->baseName . '.' . $coverImageFile->extension;
+        $coverImage = $this->cover_image_file->baseName . '.' . $this->cover_image_file->extension;
         
-        $uploadResult = $coverImageFile->saveAs($uploadDirPath . '/' . $coverImage);
+        $uploadResult = $this->cover_image_file->saveAs($uploadDirPath . '/' . $coverImage);
 
         if ($uploadResult) {
             $this->cover_image = $coverImage;

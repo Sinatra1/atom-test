@@ -23,16 +23,24 @@ class CreateAction extends Action
             'scenario' => $this->scenario,
         ]);
         
-        $model->load(\Yii::$app->getRequest()->getBodyParams(), '');
-
-        $coverImageFile = UploadedFile::getInstanceByName('cover_image_file');
+        $id = \Yii::$app->getRequest()->getQueryParam('id');
         
-        if (!empty($coverImageFile)) {
-            $model->uploadCoverImageFile($coverImageFile);
+        if (!empty($id)) {
+            $model = $this->findModel($id);
         }
         
-        $model->save();
+        $model->load(\Yii::$app->getRequest()->getBodyParams(), '');
 
+        $model->cover_image_file = UploadedFile::getInstanceByName('cover_image_file');
+        
+        if (!empty($model->cover_image_file)) {
+            $model->uploadCoverImageFile();
+        }
+        
+        $model->cover_image_file = null;
+        
+        $model->save();
+        
         if ($model->hasErrors()) {
             throw new ServerErrorHttpException('Failed to create the book for unknown reason.');
         }
