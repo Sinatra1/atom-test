@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use yii\rest\ActiveController;
@@ -13,8 +14,9 @@ use yii\data\ActiveDataProvider;
  */
 class BookController extends ActiveController
 {
+
     public $modelClass = 'app\models\Book';
-    
+
     /**
      * @inheritdoc
      */
@@ -27,7 +29,7 @@ class BookController extends ActiveController
         ];
         return $behaviors;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -35,15 +37,19 @@ class BookController extends ActiveController
     {
         $actions = parent::actions();
 
-        $actions['index']['prepareDataProvider'] = [$this, 'getListDataProvider'];
-        
+        $actions['index'] = [
+            'class' => 'app\components\book\IndexAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
+        ];
+
         $actions['create'] = [
             'class' => 'app\components\book\CreateAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
         ];
-        
+
         $actions['update'] = [
             'class' => 'app\components\book\CreateAction',
             'modelClass' => $this->modelClass,
@@ -53,18 +59,5 @@ class BookController extends ActiveController
 
         return $actions;
     }
-    
-    public function getListDataProvider()
-    {
-        $query = Book::find()
-            ->where([
-                'is_deleted' => false
-            ])
-            ->orderBy('name');
 
-        return new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => false,
-        ]);
-    }
 }

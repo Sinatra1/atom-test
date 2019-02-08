@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the Base model class 
@@ -16,6 +17,67 @@ use yii\db\ActiveRecord;
 
 class Base extends ActiveRecord
 {
+    /**
+     * Get the list of data models 
+     * @param array $params
+     * @return array the list of data models or int count of models
+     */
+    public function getList($params = null)
+    {
+        $query = $this->getListQuery($params);
+
+        if (empty($query)) {
+            return [];
+        }
+
+        if (empty($params['count'])) {
+            $activeDataProvider = new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => false,
+            ]);
+
+            return $activeDataProvider->getModels();
+        }
+
+        return $query->asArray()->count();
+    }
+
+    /**
+     * Get list query 
+     * @param array $params
+     * @return ActiveQuery
+     */
+    public function getListQuery($params = [])
+    {
+        if (empty($params)) {
+            $params = [];
+        }
+
+        $query = self::find()->where(['is_deleted' => '0']);
+
+        if (empty($params['count']) && !empty($params['order_by'])) {
+            if (!empty($params['order_mode']) && $params['order_mode'] == 'desc') {
+                $query->orderBy([$params['order_by'] => SORT_DESC]);
+            } else {
+                $query->orderBy([$params['order_by'] => SORT_ASC]);
+            }
+        }
+
+        if (empty($params['count']) && empty($params['no_limit']) && !empty($params['offset'])) {
+            $query->offset($params['offset']);
+        }
+
+        if (!empty($params['limit'])) {
+            $limit = $params['limit'];
+        }
+
+        if (empty($params['count']) && empty($params['no_limit'])) {
+            $query->limit($limit);
+        }
+
+        return $query;
+    }
+    
     public function markDeleted()
     {
         $this->is_deleted = 1;

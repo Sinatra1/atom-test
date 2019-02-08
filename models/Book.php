@@ -106,5 +106,29 @@ class Book extends Base
 
         return $uploadResult;
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getListQuery($params = array())
+    {
+        $query = parent::getListQuery($params)->orderBy('name');
+        
+        if (!is_array($params) || empty($params)) {
+            return $query;
+        }
+        
+        if ($params['only_my']) {
+            $userToBook = new UserToBook();
+            $userToBookQuery = $userToBook->getListQuery()->
+                    select('book_id')->
+                    andWhere(['user_id' => \Yii::$app->user->id])->
+                    asArray();
+            
+            $query->andWhere(['in', 'id', $userToBookQuery]);
+        }
+        
+        return $query;
+    }
 
 }
