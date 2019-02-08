@@ -44,6 +44,7 @@ class User extends Base implements \yii\web\IdentityInterface
             ['email', 'email'],
             ['email', 'unique'],
             ['username', 'unique'],
+            [['password'], 'string', 'min' => 8]
         ];
     }
     

@@ -54,11 +54,7 @@ class Book extends Base
                 ['description', 'string'],
                 ['isbn', 'unique'],
                 [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
-                [
-                    ['cover_image_file'], 
-                    'file', 
-                    'extensions' => ['png', 'jpg', 'gif', 'jpeg'],
-                ],
+                [['cover_image_file'], 'image'],
         ];
     }
 
@@ -88,6 +84,7 @@ class Book extends Base
     public function uploadCoverImageFile()
     {
         if (empty($this->cover_image_file) || !$this->validate()) {
+            //throw new ServerErrorHttpException('Uploaded file is too big');
             return false;
         }
         $parentDir = \Yii::$app->basePath . '/web';
