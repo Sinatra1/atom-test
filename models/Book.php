@@ -107,12 +107,23 @@ class Book extends Base
         return $uploadResult;
     }
     
+    public function getList($params = null)
+    {
+        $models = parent::getList($params);
+        
+        foreach ($models as $model) {
+            $model->description = $this->getShortText($model->description);
+        }
+
+        return $models;
+    }
+    
     /**
      * {@inheritdoc}
      */
     public function getListQuery($params = array())
     {
-        $query = parent::getListQuery($params)->orderBy('name');
+        $query = parent::getListQuery($params);
         
         if (!is_array($params) || empty($params)) {
             return $query;

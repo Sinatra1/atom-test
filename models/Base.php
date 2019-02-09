@@ -17,6 +17,8 @@ use yii\data\ActiveDataProvider;
 
 class Base extends ActiveRecord
 {
+    protected $shortTextLength = 255;
+    
     /**
      * Get the list of data models 
      * @param array $params
@@ -88,5 +90,14 @@ class Base extends ActiveRecord
     {
         $this->is_deleted = 0;
         $this->save();
+    }
+    
+    public function getShortText($text)
+    {
+        if (empty($text) || mb_strlen($text) < $this->shortTextLength) {
+            return $text;
+        }
+
+        return mb_substr($text, 0, $this->shortTextLength) . '...';
     }
 }
