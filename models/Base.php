@@ -80,16 +80,26 @@ class Base extends ActiveRecord
         return $query;
     }
     
+    /**
+     * Mark object as deleted
+     * 
+     * @return bool markDeleted success
+     */
     public function markDeleted()
     {
         $this->is_deleted = 1;
-        $this->save();
+        return $this->save();
     }
 
+    /**
+     * Recover object
+     * 
+     * @return bool recover success
+     */
     public function recover()
     {
         $this->is_deleted = 0;
-        $this->save();
+        return $this->save();
     }
     
     public function getShortText($text)

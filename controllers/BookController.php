@@ -56,6 +56,12 @@ class BookController extends ActiveController
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->updateScenario,
         ];
+        
+        $actions['delete'] = [
+            'class' => 'app\components\book\DeleteAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
+        ];
 
         return $actions;
     }

@@ -44,17 +44,17 @@ class Book extends Base
         $oldestYear = 1400;
 
         return [
-                [['name', 'year'], 'required'],
-                [['name', 'cover_image'], 'string', 'max' => 255],
-                ['isbn', 'string', 'length' => 13],
-                [['year', 'isbn'], 'integer'],
-                ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
-                ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
-                [['name', 'year', 'isbn', 'description'], 'trim'],
-                ['description', 'string'],
-                ['isbn', 'unique'],
-                [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
-                [['cover_image_file'], 'image'],
+            [['name', 'year'], 'required'],
+            [['name', 'cover_image'], 'string', 'max' => 255],
+            ['isbn', 'string', 'length' => 13],
+            [['year', 'isbn'], 'integer'],
+            ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
+            ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
+            [['name', 'year', 'isbn', 'description'], 'trim'],
+            ['description', 'string'],
+            ['isbn', 'unique'],
+            [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
+            [['cover_image_file'], 'image'],
         ];
     }
 
@@ -95,7 +95,7 @@ class Book extends Base
         }
 
         $coverImage = $this->cover_image_file->baseName . '.' . $this->cover_image_file->extension;
-        
+
         $uploadResult = $this->cover_image_file->saveAs($uploadDirPath . '/' . $coverImage);
 
         if ($uploadResult) {
@@ -106,39 +106,41 @@ class Book extends Base
 
         return $uploadResult;
     }
-    
+
     public function getList($params = null)
     {
         $models = parent::getList($params);
-        
-        foreach ($models as $model) {
-            $model->description = $this->getShortText($model->description);
+
+        if (is_array($models)) {
+            foreach ($models as $model) {
+                $model->description = $this->getShortText($model->description);
+            }
         }
 
         return $models;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function getListQuery($params = array())
     {
         $query = parent::getListQuery($params);
-        
+
         if (!is_array($params) || empty($params)) {
             return $query;
         }
-        
+
         if ($params['only_my']) {
             $userToBook = new UserToBook();
             $userToBookQuery = $userToBook->getListQuery()->
                     select('book_id')->
                     andWhere(['user_id' => \Yii::$app->user->id])->
                     asArray();
-            
+
             $query->andWhere(['in', 'id', $userToBookQuery]);
         }
-        
+
         return $query;
     }
 

@@ -2,10 +2,8 @@
 
 namespace app\components\book;
 
-use yii\web\ServerErrorHttpException;
 use yii\rest\Action;
 use yii\base\Model;
-use yii\web\UploadedFile;
 
 class IndexAction extends Action
 {
