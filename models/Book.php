@@ -3,12 +3,14 @@
 namespace app\models;
 
 use yii\web\ServerErrorHttpException;
+use Yii;
 
 /**
  * This is the model class for table "book".
  *
  * @property integer $id
  * @property string $name
+ * @property integer $created_user_id 
  * @property string $isbn
  * @property integer $year
  * @property string $cover_image
@@ -45,12 +47,12 @@ class Book extends Base
 
         return [
             [['name', 'year'], 'required'],
+            [['name', 'year', 'isbn', 'description'], 'trim'],
             [['name', 'cover_image'], 'string', 'max' => 255],
             ['isbn', 'string', 'length' => 13],
             [['year', 'isbn'], 'integer'],
             ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
             ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
-            [['name', 'year', 'isbn', 'description'], 'trim'],
             ['description', 'string'],
             ['isbn', 'unique'],
             [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
@@ -72,6 +74,10 @@ class Book extends Base
         if (empty($this->cover_image)) {
             $this->cover_image = null;
         }
+        
+        if ($this->isNewRecord) {
+            $this->created_user_id = Yii::$app->user->id;
+        }
 
         return $result;
     }
@@ -87,8 +93,8 @@ class Book extends Base
             //throw new ServerErrorHttpException('Uploaded file is too big');
             return false;
         }
-        $parentDir = \Yii::$app->basePath . '/web';
-        $uploadDirPath = $parentDir . '/' . \Yii::$app->params['uploadDirName'];
+        $parentDir = Yii::$app->basePath . '/web';
+        $uploadDirPath = $parentDir . '/' . Yii::$app->params['uploadDirName'];
 
         if (!file_exists($uploadDirPath)) {
             throw new ServerErrorHttpException('Upload dir ' . $uploadDirPath . ' not exists');
@@ -135,7 +141,7 @@ class Book extends Base
             $userToBook = new UserToBook();
             $userToBookQuery = $userToBook->getListQuery()->
                     select('book_id')->
-                    andWhere(['user_id' => \Yii::$app->user->id])->
+                    andWhere(['user_id' => Yii::$app->user->id])->
                     asArray();
 
             $query->andWhere(['in', 'id', $userToBookQuery]);
