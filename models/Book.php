@@ -74,7 +74,7 @@ class Book extends Base
         if (empty($this->cover_image)) {
             $this->cover_image = null;
         }
-        
+
         if ($this->isNewRecord) {
             $this->created_user_id = Yii::$app->user->id;
         }
@@ -146,8 +146,16 @@ class Book extends Base
 
             $query->andWhere(['in', 'id', $userToBookQuery]);
         }
-
+        
         return $query;
+    }
+
+    public function addBookToMy()
+    {
+        $userToBook = new UserToBook();
+        $userToBook->user_id = Yii::$app->user->id;
+        $userToBook->book_id = $this->id;
+        return $userToBook->save();
     }
 
 }

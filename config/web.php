@@ -56,12 +56,15 @@ $config = [
                 ['class' => 'yii\rest\UrlRule', 'controller' => ['user', 'auth']],
                 
                 'OPTIONS books' => 'book/options',
+                'GET books' => 'book/index',
                 'POST books' => 'book/create',
                 'OPTIONS books/<id:\d+>' => 'book/options',
                 'POST books/<id:\d+>' => 'book/create',
                 'GET books/<id:\d+>' => 'book/view',
-                'GET books' => 'book/index',
                 'DELETE books/<id:\d+>' => 'book/delete',
+                
+                'OPTIONS my-books' => 'my-book/options',
+                'GET my-books' => 'my-book/index',
             ],
         ],
     ],

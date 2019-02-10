@@ -14,6 +14,14 @@ class DeleteAction extends Action
         if ($this->checkAccess) {
             call_user_func($this->checkAccess, $this->id, $model);
         }
+        
+        if (!empty($model->id) && $model->created_user_id != Yii::$app->user->id) {
+            throw new ServerErrorHttpException('Not allowed to edit this book');
+        }
+        
+        if (!empty($id) && empty($model->id)) {
+            throw new ServerErrorHttpException("A book with this id doesn't exsist");
+        }
 
         if ($model->markDeleted() === false) {
             throw new ServerErrorHttpException('Failed to delete the object for unknown reason.');

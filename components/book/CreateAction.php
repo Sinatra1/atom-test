@@ -6,6 +6,8 @@ use yii\web\ServerErrorHttpException;
 use yii\rest\Action;
 use yii\base\Model;
 use yii\web\UploadedFile;
+use app\models\UserToBook;
+use Yii;
 
 class CreateAction extends Action
 {
@@ -18,7 +20,7 @@ class CreateAction extends Action
         if ($this->checkAccess) {
             call_user_func($this->checkAccess, $this->id);
         }
-
+        
         $model = new $this->modelClass([
             'scenario' => $this->scenario,
         ]);
@@ -27,6 +29,14 @@ class CreateAction extends Action
         
         if (!empty($id)) {
             $model = $this->findModel($id);
+        }
+        
+        if (!empty($model->id) && $model->created_user_id != Yii::$app->user->id) {
+            throw new ServerErrorHttpException('Not allowed to edit this book');
+        }
+        
+        if (!empty($id) && empty($model->id)) {
+            throw new ServerErrorHttpException("A book with this id doesn't exsist");
         }
         
         $model->load(\Yii::$app->getRequest()->getBodyParams(), '');
@@ -43,6 +53,10 @@ class CreateAction extends Action
         
         if ($model->hasErrors()) {
             throw new ServerErrorHttpException('Failed to create the book for unknown reason.');
+        }
+        
+        if (empty($id) && !empty($model->id)) {
+            $model->addBookToMy();
         }
 
         return $model->id;

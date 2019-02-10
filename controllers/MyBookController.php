@@ -10,7 +10,7 @@ use yii\filters\auth\HttpBearerAuth;
  *
  * @author vlad
  */
-class BookController extends ActiveController
+class MyBookController extends ActiveController
 {
 
     public $modelClass = 'app\models\Book';
@@ -36,27 +36,27 @@ class BookController extends ActiveController
         $actions = parent::actions();
 
         $actions['index'] = [
-            'class' => 'app\components\book\IndexAction',
+            'class' => 'app\components\myBook\IndexAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
         ];
 
         $actions['create'] = [
-            'class' => 'app\components\book\CreateAction',
+            'class' => 'app\components\myBook\CreateAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
         ];
 
         $actions['update'] = [
-            'class' => 'app\components\book\CreateAction',
+            'class' => 'app\components\myBook\CreateAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->updateScenario,
         ];
         
         $actions['delete'] = [
-            'class' => 'app\components\book\DeleteAction',
+            'class' => 'app\components\myBook\DeleteAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
         ];
