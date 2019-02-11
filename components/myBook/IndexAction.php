@@ -5,6 +5,7 @@ namespace app\components\myBook;
 use yii\rest\Action;
 use yii\base\Model;
 use Yii;
+use app\models\User;
 
 class IndexAction extends Action
 {
@@ -17,15 +18,13 @@ class IndexAction extends Action
         if ($this->checkAccess) {
             call_user_func($this->checkAccess, $this->id);
         }
-
-        $model = new $this->modelClass([
-            'scenario' => $this->scenario,
-        ]);
+        
+        $user = new User();
+        $user->id = Yii::$app->user->id;
         
         $params = Yii::$app->request->getQueryParams();
-        $params['only_my'] = true;
         
-        return $model->getList($params);
+        return $user->getMyBooks($params);
     }
 
 }

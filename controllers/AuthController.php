@@ -12,6 +12,7 @@ use yii\filters\auth\HttpBearerAuth;
  */
 class AuthController extends ActiveController
 {
+
     public $modelClass = 'app\models\User';
 
     /**
@@ -40,19 +41,18 @@ class AuthController extends ActiveController
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
         ];
-        
-        $actions['index'] = [
-            'class' => 'app\components\auth\CheckAuthAction',
-            'modelClass' => $this->modelClass,
-            'checkAccess' => [$this, 'checkAccess'],
-        ];
 
         $actions['delete'] = [
             'class' => 'app\components\auth\LogoutAction',
             'modelClass' => $this->modelClass,
-            'checkAccess' => [$this, 'checkAccess'],
+            'checkAccess' => [$this, 'checkAccess']
+        ];
+
+        $actions['options'] = [
+            'class' => 'app\components\auth\OptionsAction',
         ];
 
         return $actions;
     }
+
 }

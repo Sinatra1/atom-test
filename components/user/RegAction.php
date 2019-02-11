@@ -6,7 +6,6 @@ use yii\web\ServerErrorHttpException;
 use yii\rest\Action;
 use yii\base\Model;
 use app\models\User;
-use yii\helpers\Url;
 
 class RegAction extends Action
 {
@@ -29,7 +28,7 @@ class RegAction extends Action
         $model->save();
         
         if ($model->hasErrors()) {
-            throw Exception('Failed to create the object for unknown reason.');
+            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
         }
 
         if (!$model->login()) {

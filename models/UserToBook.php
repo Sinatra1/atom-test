@@ -21,4 +21,18 @@ class UserToBook extends Base
     {
         return 'user_to_book';
     }
+    
+    public static function findByUserAndBook($userId, $bookId, $isDeleted = false) {
+        if (empty($userId) || empty($bookId)) {
+            return;
+        }
+        
+        return self::find()->
+                where([
+                    'user_id' => $userId, 
+                    'book_id' => $bookId,
+                    'is_deleted' => $isDeleted
+                ])->
+                one();
+    }
 }

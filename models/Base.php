@@ -24,10 +24,12 @@ class Base extends ActiveRecord
      * @param array $params
      * @return array the list of data models or int count of models
      */
-    public function getList($params = null)
+    public function getList($params = null, $query = null)
     {
-        $query = $this->getListQuery($params);
-
+        if (empty($query)) {
+            $query = $this->getListQuery($params);
+        }
+        
         if (empty($query)) {
             return [];
         }
@@ -109,5 +111,24 @@ class Base extends ActiveRecord
         }
 
         return mb_substr($text, 0, $this->shortTextLength) . '...';
+    }
+    
+    public function getIdsList($list, $fieldName = 'id')
+    {
+        $idsList = [];
+
+        if (empty($list)) {
+            return $idsList;
+        }
+
+        foreach ($list as $item) {
+            if (in_array($item[$fieldName], $idsList)) {
+                continue;
+            }
+
+            $idsList[] = $item[$fieldName];
+        }
+
+        return $idsList;
     }
 }

@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\web\ServerErrorHttpException;
 use Yii;
+use app\models\User;
 
 /**
  * This is the model class for table "book".
@@ -18,7 +19,7 @@ use Yii;
  * @property datetime $created
  * @property datetime $updated
  * @property datetime $deleted
- * @property boolean $is_deleted
+ * @property bool $is_deleted
  * 
  */
 class Book extends Base
@@ -28,6 +29,7 @@ class Book extends Base
      * @var UploadedFile
      */
     public $cover_image_file;
+    public $is_my_book;
 
     /**
      * @return string
@@ -35,6 +37,17 @@ class Book extends Base
     public static function tableName()
     {
         return 'book';
+    }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        $fields['is_my_book'] = function ($model) {
+            return $model->is_my_book;
+        };
+        
+        return $fields;
     }
 
     /**
@@ -46,17 +59,17 @@ class Book extends Base
         $oldestYear = 1400;
 
         return [
-            [['name', 'year'], 'required'],
-            [['name', 'year', 'isbn', 'description'], 'trim'],
-            [['name', 'cover_image'], 'string', 'max' => 255],
-            ['isbn', 'string', 'length' => 13],
-            [['year', 'isbn'], 'integer'],
-            ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
-            ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
-            ['description', 'string'],
-            ['isbn', 'unique'],
-            [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
-            [['cover_image_file'], 'image'],
+                [['name', 'year'], 'required'],
+                [['name', 'year', 'isbn', 'description'], 'trim'],
+                [['name', 'cover_image'], 'string', 'max' => 255],
+                ['isbn', 'string', 'length' => 13],
+                [['year', 'isbn'], 'integer'],
+                ['year', 'compare', 'compareValue' => $currentYear, 'operator' => '<=', 'type' => 'number'],
+                ['year', 'compare', 'compareValue' => $oldestYear, 'operator' => '>=', 'type' => 'number'],
+                ['description', 'string'],
+                ['isbn', 'unique'],
+                [['name', 'year'], 'unique', 'targetAttribute' => ['name', 'year']],
+                [['cover_image_file'], 'image'],
         ];
     }
 
@@ -113,49 +126,26 @@ class Book extends Base
         return $uploadResult;
     }
 
-    public function getList($params = null)
+    public function getList($params = null, $query = null)
     {
-        $models = parent::getList($params);
+        $models = parent::getList($params, $query);
+
+        $user = new User();
+        $user->id = Yii::$app->user->id;
+        $myBooksIds = $user->getMyBooksIds();
 
         if (is_array($models)) {
             foreach ($models as $model) {
                 $model->description = $this->getShortText($model->description);
+
+                $model->is_my_book = 0;
+
+                if (in_array($model->id, $myBooksIds)) {
+                    $model->is_my_book = 1;
+                }
             }
         }
 
         return $models;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getListQuery($params = array())
-    {
-        $query = parent::getListQuery($params);
-
-        if (!is_array($params) || empty($params)) {
-            return $query;
-        }
-
-        if ($params['only_my']) {
-            $userToBook = new UserToBook();
-            $userToBookQuery = $userToBook->getListQuery()->
-                    select('book_id')->
-                    andWhere(['user_id' => Yii::$app->user->id])->
-                    asArray();
-
-            $query->andWhere(['in', 'id', $userToBookQuery]);
-        }
-        
-        return $query;
-    }
-
-    public function addBookToMy()
-    {
-        $userToBook = new UserToBook();
-        $userToBook->user_id = Yii::$app->user->id;
-        $userToBook->book_id = $this->id;
-        return $userToBook->save();
-    }
-
 }

@@ -6,7 +6,7 @@ use yii\web\ServerErrorHttpException;
 use yii\rest\Action;
 use yii\base\Model;
 use yii\web\UploadedFile;
-use app\models\UserToBook;
+use app\models\User;
 use Yii;
 
 class CreateAction extends Action
@@ -56,7 +56,9 @@ class CreateAction extends Action
         }
         
         if (empty($id) && !empty($model->id)) {
-            $model->addBookToMy();
+            $user = new User();
+            $user->id = Yii::$app->user->id;
+            $user->addBookToMy($model->id);
         }
 
         return $model->id;

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\web\ServerErrorHttpException;
 
 /**
  * This is the model class for table "user".
@@ -18,12 +19,12 @@ use Yii;
  * @property datetime $updated
  * @property datetime $deleted
  * @property boolean $is_deleted
- **/
-
+ * */
 class User extends Base implements \yii\web\IdentityInterface
 {
+
     protected $cookieTime = 2592000;
-    
+
     /**
      * @return string
      */
@@ -31,23 +32,23 @@ class User extends Base implements \yii\web\IdentityInterface
     {
         return 'user';
     }
-    
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['username', 'password', 'first_name', 'last_name', 'email'], 'required'],
-            [['username', 'first_name', 'last_name', 'password', 'email'], 'string', 'max' => 255],
-            [['username', 'password', 'first_name', 'last_name', 'email'], 'trim'],
-            ['email', 'email'],
-            ['email', 'unique'],
-            ['username', 'unique'],
-            [['password'], 'string', 'min' => 8]
+                [['username', 'password', 'first_name', 'last_name', 'email'], 'required'],
+                [['username', 'first_name', 'last_name', 'password', 'email'], 'string', 'max' => 255],
+                [['username', 'password', 'first_name', 'last_name', 'email'], 'trim'],
+                ['email', 'email'],
+                ['email', 'unique'],
+                ['username', 'unique'],
+                [['password'], 'string', 'min' => 8]
         ];
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -60,7 +61,7 @@ class User extends Base implements \yii\web\IdentityInterface
 
         return $fields;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -80,7 +81,7 @@ class User extends Base implements \yii\web\IdentityInterface
 
         return $result;
     }
-    
+
     public function login()
     {
         $result = \Yii::$app->user->login($this, $this->cookieTime);
@@ -107,7 +108,7 @@ class User extends Base implements \yii\web\IdentityInterface
     {
         return static::findOne(['access_token' => $token, 'is_deleted' => false]);
     }
-    
+
     public function markDeleted()
     {
         $this->username .= md5(rand(0, 1000));
@@ -129,7 +130,7 @@ class User extends Base implements \yii\web\IdentityInterface
     {
         return static::findOne(['username' => $username, 'is_deleted' => false]);
     }
-    
+
     /**
      * Finds user by email
      *
@@ -176,4 +177,82 @@ class User extends Base implements \yii\web\IdentityInterface
         return $this->password === $password;
     }
 
+    public function getMyBooks($params = null)
+    {
+        $query = $this->getMyBooksQuery($params);
+        $book = new Book();
+        return $book->getList($params, $query);
+    }
+    
+    public function getMyBooksIds($params = null)
+    {
+        $query = $this->getMyBooksQuery($params);
+        $query->select('id');
+        
+        $books = $query->asArray()->all();
+        $booksIds = [];
+        
+        if (empty($books)) {
+            return $booksIds;
+        }
+        
+        $booksIds = $this->getIdsList($books);
+        
+        return $booksIds;
+    }
+
+    public function getMyBooksQuery($params = [])
+    {
+        if (empty($this->id)) {
+            return;
+        }
+        
+        $book = new Book();
+        $query = $book->getListQuery($params);
+
+        $userToBook = new UserToBook();
+        $userToBookQuery = $userToBook->getListQuery()->
+                select('book_id')->
+                andWhere(['user_id' => $this->id]);
+
+        $query->andWhere(['in', 'id', $userToBookQuery]);
+        
+        return $query;
+    }
+
+    public function addBookToMy($bookId)
+    {
+        if (empty($bookId) || empty($this->id)) {
+            return;
+        }
+        
+        $userToBook = UserToBook::findByUserAndBook($this->id, $bookId, true);
+        
+        if (empty($userToBook->user_id)) {
+            $userToBook = new UserToBook();
+        }
+
+        $userToBook->user_id = $this->id;
+        $userToBook->book_id = $bookId;
+        $userToBook->is_deleted = false;
+        
+        return $userToBook->save();
+    }
+
+    public function removeBookFromMy($bookId)
+    {
+        if (empty($bookId) || empty($this->id)) {
+            return;
+        }
+        
+        $userToBook = UserToBook::findByUserAndBook($this->id, $bookId);
+        
+        if (empty($userToBook->user_id)) {
+            throw new ServerErrorHttpException('Book is not in your collection');
+        }
+        
+        $userToBook->is_deleted = true;
+        
+        return $userToBook->save();
+    }
 }
