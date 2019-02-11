@@ -53,11 +53,15 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['user']],
-                
                 'OPTIONS auths' => 'auth/options',
                 'POST auths' => 'auth/create',
                 'DELETE auths' => 'auth/delete',
+                
+                'OPTIONS users' => 'user/options',
+                'POST users' => 'user/create',
+                'PUT users' => 'user/update',
+                'GET users' => 'user/view',
+                'DELETE users' => 'user/delete',
                 
                 'OPTIONS books' => 'book/options',
                 'GET books' => 'book/index',

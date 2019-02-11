@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use yii\rest\ActiveController;
@@ -12,8 +13,9 @@ use app\models\User;
  */
 class UserController extends ActiveController
 {
+
     public $modelClass = 'app\models\User';
-    
+
     /**
      * @inheritdoc
      */
@@ -26,7 +28,7 @@ class UserController extends ActiveController
         ];
         return $behaviors;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -34,13 +36,28 @@ class UserController extends ActiveController
     {
         $actions = parent::actions();
 
-        $actions['index']['prepareDataProvider'] = [$this, 'getListDataProvider'];
+        $actions['options'] = [
+            'class' => 'app\components\user\OptionsAction',
+        ];
 
         $actions['create'] = [
             'class' => 'app\components\user\RegAction',
             'modelClass' => $this->modelClass,
             'checkAccess' => [$this, 'checkAccess'],
             'scenario' => $this->createScenario,
+        ];
+
+        $actions['update'] = [
+            'class' => 'app\components\user\UpdateAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
+            'scenario' => $this->createScenario,
+        ];
+
+        $actions['view'] = [
+            'class' => 'app\components\user\ViewAction',
+            'modelClass' => $this->modelClass,
+            'checkAccess' => [$this, 'checkAccess'],
         ];
 
         $actions['delete'] = [
@@ -51,4 +68,5 @@ class UserController extends ActiveController
 
         return $actions;
     }
+
 }
