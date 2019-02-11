@@ -3,6 +3,7 @@
 namespace app\components\book;
 
 use yii\rest\Action;
+use Yii;
 
 class DeleteAction extends Action
 {

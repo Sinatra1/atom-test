@@ -90,6 +90,8 @@ class Base extends ActiveRecord
     public function markDeleted()
     {
         $this->is_deleted = 1;
+        $this->deleted = date('Y-m-d H:i:s', time());
+        
         return $this->save();
     }
 
@@ -130,5 +132,9 @@ class Base extends ActiveRecord
         }
 
         return $idsList;
+    }
+    
+    protected function getHash() {
+        return md5(rand(0, 1000));
     }
 }

@@ -148,4 +148,17 @@ class Book extends Base
 
         return $models;
     }
+    
+    public function markDeleted()
+    {
+        $this->name .= $this->getHash();
+        
+        if (!empty($this->isbn)) {
+            $this->isbn .= $this->getHash();
+        }
+        
+        $result = parent::markDeleted();
+        
+        return $result; 
+    }
 }

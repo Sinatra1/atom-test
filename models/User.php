@@ -111,11 +111,10 @@ class User extends Base implements \yii\web\IdentityInterface
 
     public function markDeleted()
     {
-        $this->username .= md5(rand(0, 1000));
-        $this->email .= md5(rand(0, 1000));
-        $this->is_deleted = true;
-        $this->deleted = date('Y-m-d H:i:s', time());
-        $result = $this->save();
+        $this->username .= $this->getHash();
+        $this->email .= $this->getHash();
+        
+        $result = parent::markDeleted();
 
         return $result;
     }
