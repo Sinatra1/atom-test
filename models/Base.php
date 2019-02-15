@@ -134,6 +134,15 @@ class Base extends ActiveRecord
         return $idsList;
     }
     
+    public function beforeSave($insert)
+    {
+        $result = parent::beforeSave($insert);
+        
+        $this->updated = date('Y-m-d H:i:s', time());
+        
+        return $result;
+    }
+
     protected function getHash() {
         return md5(rand(0, 1000));
     }
