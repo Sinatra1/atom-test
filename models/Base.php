@@ -71,11 +71,13 @@ class Base extends ActiveRecord
             $query->offset($params['offset']);
         }
 
+        $limit = null;
+        
         if (!empty($params['limit'])) {
             $limit = $params['limit'];
         }
 
-        if (empty($params['count']) && empty($params['no_limit'])) {
+        if (!empty($limit) && empty($params['count']) && empty($params['no_limit'])) {
             $query->limit($limit);
         }
 
